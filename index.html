@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tegar Hermawan</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif}
+
+body{
+background:#050505;
+color:white;
+overflow:hidden;
+}
+
+/* HUJAN */
+.rain{
+position:absolute;
+width:2px;height:18px;
+background:rgba(255,255,255,0.3);
+animation:fall linear infinite;
+}
+@keyframes fall{
+from{transform:translateY(-100vh)}
+to{transform:translateY(100vh)}
+}
+
+/* PETIR */
+.flash{
+position:fixed;
+width:100%;height:100%;
+background:white;
+opacity:0;
+pointer-events:none;
+}
+
+/* CONTAINER */
+.container{
+position:absolute;
+top:50%;left:50%;
+transform:translate(-50%,-50%);
+text-align:center;
+width:90%;
+}
+
+/* PROFILE */
+.profile{
+width:130px;height:130px;
+border-radius:50%;
+border:3px solid cyan;
+object-fit:cover;
+box-shadow:0 0 20px cyan,0 0 80px blue;
+animation:glow 2s infinite alternate;
+}
+@keyframes glow{
+from{box-shadow:0 0 20px cyan}
+to{box-shadow:0 0 80px blue}
+}
+
+/* TEXT */
+h1{margin-top:15px;color:cyan}
+p{margin-top:10px;opacity:0.8}
+
+/* QUOTE */
+.quote{
+margin-top:20px;
+font-style:italic;
+min-height:50px;
+color:#ccc;
+}
+
+/* BUTTON */
+.btn{
+margin-top:10px;
+padding:10px 18px;
+border:none;
+border-radius:20px;
+background:linear-gradient(45deg,cyan,blue);
+color:white;
+cursor:pointer;
+}
+
+/* DIARY */
+#diary{display:none;margin-top:10px}
+#diaryText{transition:0.3s}
+
+/* CURSOR */
+.cursor{
+position:absolute;
+width:10px;height:10px;
+border-radius:50%;
+background:cyan;
+pointer-events:none;
+box-shadow:0 0 20px blue;
+}
+
+/* MUSIC */
+.music{
+position:fixed;
+bottom:10px;
+left:50%;
+transform:translateX(-50%);
+}
+</style>
+</head>
+
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="flash" id="flash"></div>
+
+<div class="container">
+
+<img id="profile" src="https://i.imgur.com/4Z7b1.jpg" class="profile">
+<br>
+
+
+<h1>Tegar Hermawan</h1>
+<p>Belajar kuat walau sering rapuh.</p>
+
+<div class="quote" id="quote"></div>
+
+<button class="btn" onclick="prevQuote()">⬅️</button>
+<button class="btn" onclick="nextQuote()">➡️</button>
+
+<br>
+
+<button class="btn" onclick="openDiary()">Buka Diary</button>
+
+<div id="diary">
+<p id="diaryText"></p>
+<button class="btn" onclick="prevPage()">⬅️</button>
+<button class="btn" onclick="nextPage()">➡️</button>
+</div>
+
+</div>
+
+<div class="music">
+<button class="btn" onclick="toggleMusic()">🎵 Musik</button>
+</div>
+
+<audio id="piano" loop>
+<source src="tgr.mp3">
+</audio>
+
+<script>
+// ===== HUJAN =====
+for(let i=0;i<140;i++){
+let r=document.createElement("div");
+r.className="rain";
+r.style.left=Math.random()*100+"vw";
+r.style.animationDuration=(0.5+Math.random())+"s";
+document.body.appendChild(r);
+}
+
+// ===== CURSOR =====
+document.addEventListener("mousemove",e=>{
+cursor.style.left=e.clientX+"px";
+cursor.style.top=e.clientY+"px";
+});
+
+// ===== PETIR =====
+function lightning(){
+flash.style.opacity="0.8";
+setTimeout(()=>flash.style.opacity="0",100);
+}
+setInterval(()=>{if(Math.random()>0.7)lightning()},3000);
+
+// ===== PROFILE =====
+function changeProfile(e){
+let file=e.target.files[0];
+let reader=new FileReader();
+reader.onload=function(){
+profile.src=reader.result;
+localStorage.setItem("profile",reader.result);
+};
+reader.readAsDataURL(file);
+}
+if(localStorage.getItem("profile")){
+profile.src=localStorage.getItem("profile");
+}
+
+// ===== QUOTES =====
+let quotes=[
+"Aku diam karena lelah menjelaskan.",
+"Malam tahu semua rasa yang aku sembunyikan.",
+"Aku terlihat kuat… tapi tidak selalu.",
+"Ada luka yang tidak terlihat.",
+"Aku tersenyum hanya untuk terlihat baik-baik saja.",
+"Kadang aku ingin menyerah… tapi aku bertahan.",
+"Seolah baik-baik saja… padahal tidak.",
+"Aku lelah… tapi tidak bisa berhenti."
+];
+
+let qi=0,ci=0;
+
+function type(){
+let el=document.getElementById("quote");
+if(ci<quotes[qi].length){
+el.innerHTML+=quotes[qi].charAt(ci);
+ci++;
+setTimeout(type,35);
+}else{
+setTimeout(()=>{
+el.innerHTML="";
+ci=0;
+qi=(qi+1)%quotes.length;
+type();
+},2000);
+}
+}
+type();
+
+function nextQuote(){
+qi=(qi+1)%quotes.length;
+ci=0;
+document.getElementById("quote").innerHTML="";
+}
+
+function prevQuote(){
+qi=(qi-1+quotes.length)%quotes.length;
+ci=0;
+document.getElementById("quote").innerHTML="";
+}
+
+// ===== DIARY =====
+let pages=[
+"Aku sering diam… bukan karena tak ingin bicara.",
+"Malam adalah tempat paling jujur untukku.",
+"Aku pernah berharap… lalu belajar ikhlas.",
+"Aku kuat… tapi aku juga lelah.",
+"Hidup terus berjalan… meski hati tertinggal.",
+"Ada hal yang hanya bisa dirasakan… bukan dijelaskan."
+];
+
+let idx=0;
+
+function openDiary(){
+diary.style.display="block";
+showPage();
+}
+
+function showPage(){
+diaryText.style.opacity=0;
+setTimeout(()=>{
+diaryText.innerText=pages[idx];
+diaryText.style.opacity=1;
+},200);
+}
+
+function nextPage(){if(idx<pages.length-1){idx++;showPage();}}
+function prevPage(){if(idx>0){idx--;showPage();}}
+
+// ===== MUSIC =====
+let piano=document.getElementById("piano");
+
+function toggleMusic(){
+if(piano.paused){
+piano.volume=0;
+piano.play();
+let v=0;
+let i=setInterval(()=>{
+if(v<1){v+=0.05;piano.volume=v;}
+else clearInterval(i);
+},200);
+}else{
+let v=piano.volume;
+let i=setInterval(()=>{
+if(v>0){v-=0.05;piano.volume=v;}
+else{piano.pause();clearInterval(i);}
+},200);
+}
+}
+</script>
+
+</body>
+</html>
